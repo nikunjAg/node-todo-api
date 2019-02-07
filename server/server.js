@@ -1,6 +1,7 @@
 const express = require('express');
 const body_parser = require('body-parser');
 const {ObjectID} = require('mongodb');
+const _ = require('lodash');
 
 const {mongoose} = require('./db/mongoose');
 const {Todo} = require('./model/todoModel');
@@ -61,6 +62,35 @@ app.delete('/todos/:id', (req, res) => {
         res.send({todo});
     })
     .catch((e) => res.status(400).send());
+});
+
+
+// Update a particular todo by its ID
+app.patch('/todos/:id', (req, res) => {
+
+    var hexID = req.params.id;
+    var body = _.pick(req.body, ['text', 'completed']);
+
+    if(!ObjectID.isValid(hexID))
+        return res.status(404).send();
+
+    if(_.isBoolean(body.completed) && body.completed) {
+        body.completedAt = new Date().getTime();
+    } else {
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    Todo.findByIdAndUpdate(hexID, {
+        $set: body
+    },
+    {new: true})
+    .then((todo) => {
+        if(!todo)
+            return res.status(404).send();
+        res.send({todo})
+    }).catch((e) => res.status(400).send());
+
 });
 
 app.listen(port, () => {
