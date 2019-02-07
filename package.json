@@ -4,8 +4,12 @@
   "description": "Todo Api to maintain all todos and store the data in mongodb",
   "main": "index.js",
   "scripts": {
+    "start": "node server/server.js",
     "test": "mocha server/**/*.test.js",
     "test-watch": "nodemon --exec \"npm test\""
+  },
+  "engines": {
+    "node": "8.11.4"
   },
   "author": "Nikunj Aggarwal",
   "license": "ISC",
