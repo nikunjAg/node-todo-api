@@ -84,7 +84,7 @@ app.patch('/todos/:id', (req, res) => {
     Todo.findByIdAndUpdate(hexID, {
         $set: body
     },
-    {new: true})
+    {new: true, useFindAndModify: false})
     .then((todo) => {
         if(!todo)
             return res.status(404).send();
