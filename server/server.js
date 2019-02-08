@@ -1,3 +1,4 @@
+require('./config/config');
 const express = require('express');
 const body_parser = require('body-parser');
 const {ObjectID} = require('mongodb');
@@ -7,7 +8,7 @@ const {mongoose} = require('./db/mongoose');
 const {Todo} = require('./model/todoModel');
 const {User} = require('./model/userModel');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 var app = express();
 
@@ -21,15 +22,15 @@ app.post('/todos', (req, res) => {
 
     todo
     .save()
-    .then((doc) => {
-        res.status(200).send(doc);
+    .then((todo) => {
+        res.status(200).send({todo});
     })
     .catch((e) => {
         res.status(400).send(e);
     });
 });
 
-// Get al the todos
+// Get all the todos
 app.get('/todos', (req, res) => {
     Todo.find().then((todos) => {
         res.send({todos});
