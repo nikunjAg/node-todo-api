@@ -63,6 +63,24 @@ userSchema.methods.generateAuthToken = function () {
     });
 };
 
+// statics => Model method methods => Instance method
+userSchema.statics.findByToken = function(token) {
+    var User = this;
+    var decode;
+
+    try {
+        decode = jwt.verify(token, 'someSecret');
+    } catch (e) {
+        return Promise.reject();
+    }
+    return User.findOne({
+        _id: decode._id,
+        'tokens.access': 'auth',
+        'tokens.token': token
+    });
+
+};
+
 module.exports = {
     userSchema
 };
