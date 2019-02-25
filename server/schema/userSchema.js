@@ -58,10 +58,18 @@ userSchema.methods.generateAuthToken = function () {
     var user = this;
     var access = 'auth';
     var token = jwt.sign({_id: user._id.toHexString(), access}, 'someSecret').toString();
-
     user.tokens.push({access, token});
     return user.save().then(() => {
         return token;
+    });
+};
+
+userSchema.methods.removeToken = function (token) {
+    var user = this;
+    return user.update({
+        $pull: {
+            tokens: {token}
+        }
     });
 };
 
@@ -76,11 +84,29 @@ userSchema.statics.findByToken = function(token) {
         return Promise.reject();
     }
     return User.findOne({
-        _id: decode._id,
+        '_id': decode._id,
         'tokens.access': 'auth',
         'tokens.token': token
     });
 
+};
+
+userSchema.statics.findByCredentials = function (email, password) {
+    var User = this;
+    return User.findOne({email}).then((user) => {
+        if (!user)
+            return Promise.reject();
+        // we now normally use callback in bcrypt.compare but in return we need promise
+        // so we need wrap our code inside a promise
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(password, user.password, (err, res) => {
+                if (res)
+                    resolve(user);
+                else
+                    reject();
+            });
+        });
+    });
 };
 
 userSchema.pre('save', function (next) {
