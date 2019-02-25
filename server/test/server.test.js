@@ -180,7 +180,7 @@ describe('PATCH /todos/:id', () => {
         .expect((res) => {
             expect(res.body.todo.text).toBe(body.text);
             expect(res.body.todo.completed).toBe(body.completed);
-            expect(res.body.todo.completedAt).toBeTruthy();
+            expect(typeof res.body.todo.completedAt).toBe('number');
         })
         .end((err, res) => {
             if (err)
@@ -189,7 +189,7 @@ describe('PATCH /todos/:id', () => {
             .then((todo) => {
                 expect(todo.text).toBe(body.text);
                 expect(todo.completed).toBe(body.completed);
-                expect(todo.completedAt).toBeTruthy();
+                expect(typeof todo.completedAt).toBe('number');
                 done();
             })
             .catch((e) => done(e));
